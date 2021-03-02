@@ -9,7 +9,7 @@
 ```
 ./
  ├─ backup                                     - jar包备份目录
- │  └─ project-jenkins-yyyy-mm-dd-HH-MM.jar   - 以 jenkins-yyyy-mm-dd-HH-MM 结尾的备份包
+ │  └─ project-jenkins-yyyy-mm-dd-HH-MM.jar    - 以 jenkins-yyyy-mm-dd-HH-MM 结尾的备份包
  ├─ project.jar                                - 当前版本的jar包
  ├─ jenkins-start.sh                           - jenkins启动脚本
  └─ log                                        - 日志目录
