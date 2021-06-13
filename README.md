@@ -14,6 +14,4 @@
  ├─ jenkins-start.sh                           - jenkins启动脚本
  └─ log                                        - 日志目录
     ├─ project.log                             - 当前版本项目的日志
-    └─ project.log.yyyy-mm-dd-HH-MM.history    - 旧版本项目的日志
-
 ```
