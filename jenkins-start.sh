@@ -20,15 +20,15 @@
 ########
 
 #项目名,项目启动成功,备份jar包时重命名使用
-PROJECT_NAME="datafxsys"
+PROJECT_NAME="mybox-server"
 #项目启用的配置文件 spring.profiles.active的值
-PROJECT_ACTIVE_PROFILE="dev"
+PROJECT_ACTIVE_PROFILE="prod"
 #打包出来的文件名,项目jar包名称,启动命令 java -jar xxx.jar 
-PROJECT_BULID_FILE_NAME="datafxsys-0.0.1-SNAPSHOT.jar"
+PROJECT_BULID_FILE_NAME="my-box-0.0.1-SNAPSHOT.jar"
 #项目日志,日志的目录
-LOG_FILE_PATH="./log/datafxsys.log"
+LOG_FILE_PATH="./log/mybox-server.log"
 #项目启动成功时日志输出的关键字
-LOG_SUCCESS_END_MARK="系统数据源数量"
+LOG_SUCCESS_END_MARK="Started MyBoxApplication"
 #项目启动失败时日志输出的关键字
 LOG_FAIL_END_MARK="Shutting down"
 
@@ -61,14 +61,17 @@ projectPid=$(ps aux | grep ${PROJECT_BULID_FILE_NAME} | grep -v "grep" | tr -s '
 if [[ ${projectPid} != "" ]]
 then
     echo "旧版本项目进程编号:${projectPid},结束旧版本项目进程"
-    kill -9 ${projectPid}
-fi
-
-#判断日志文件是否已存在,存在重命名
-if [ -e ${LOG_FILE_PATH} ]
-then
-    echo "旧版本项目日志文件已存在,重命名文件为 ${LOG_FILE_PATH}.${nowDate}.history"
-    mv ${LOG_FILE_PATH} "${LOG_FILE_PATH}.${nowDate}.history"
+    kill ${projectPid}
+    echo "等待停止"
+    while true 
+    do
+        if [[ $(ps aux | grep ${PROJECT_BULID_FILE_NAME} | grep -v "grep" | tr -s ' '| cut -d ' ' -f 2) == "" ]]
+        then         
+            break
+        fi
+        sleep 1s
+        echo "."
+    done
 fi
 
 #启动项目
@@ -76,34 +79,36 @@ echo "启动项目"
 echo "nohup java -jar -Dspring.profiles.active=${PROJECT_ACTIVE_PROFILE} ${PROJECT_BULID_FILE_NAME}  > /dev/null 2>&1 &"
 nohup java -jar -Dspring.profiles.active=${PROJECT_ACTIVE_PROFILE} ${PROJECT_BULID_FILE_NAME} > /dev/null 2>&1 &
 
-#阻塞等待项目产生日志文件
-echo "等待项目产生日志文件"
+#等待产生日志文件
+echo "等待日志"
 while true
-do 
+do  
     if [ -e ${LOG_FILE_PATH} ]
     then
-        break;
+        break
     fi
+    sleep 1s
+    echo "."
 done
 
 #打印日志内容
 echo "------------------------------------启动日志 开始------------------------------------"
-tail -f ${LOG_FILE_PATH} | sed "/${LOG_SUCCESS_END_MARK}/Q; /${LOG_FAIL_END_MARK}/Q 1";
+tail -f -n 0 ${LOG_FILE_PATH} | sed "/${LOG_SUCCESS_END_MARK}/Q; /${LOG_FAIL_END_MARK}/Q 1";
 projectStartStatus=$?
 echo "------------------------------------启动日志 结束------------------------------------"
 
 #判断项目启动状态,启动成功备份项目,启动失败异常状态结束脚本
-if [[ ${projectStartStatus} == 0 ]]
+if [[ ${projectStartStatus} != 0 ]]
 then
-    echo "匹配到启动成功日志标识符\"${LOG_SUCCESS_END_MARK}\",项目启动成功"
-    echo "将 ${PROJECT_BULID_FILE_NAME} 备份到 ./backup/${PROJECT_NAME}-jenkins-${nowDate}.jar"
-    #判断文件夹是否存在
-    if [ ! -d "./backup" ]
-    then
-        mkdir ./backup
-    fi
-    cp -a ./${PROJECT_BULID_FILE_NAME} ./backup/${PROJECT_NAME}-jenkins-${nowDate}.jar
-else 
     echo "匹配到启动失败日志标识符\"${LOG_FAIL_END_MARK}\"项目启动失败"
     exit 2
 fi
+
+echo "匹配到启动成功日志标识符\"${LOG_SUCCESS_END_MARK}\",项目启动成功"
+echo "将 ${PROJECT_BULID_FILE_NAME} 备份到 ./backup/${PROJECT_NAME}-jenkins-${nowDate}.jar"
+#判断文件夹是否存在
+if [ ! -d "./backup" ]
+then
+    mkdir ./backup
+fi
+cp -a ./${PROJECT_BULID_FILE_NAME} ./backup/${PROJECT_NAME}-jenkins-${nowDate}.jar
