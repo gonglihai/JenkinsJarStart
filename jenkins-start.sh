@@ -23,6 +23,8 @@ BUILD_ID=dontKillMe
 PROJECT_NAME="auto_download"
 #打包出来的文件名,项目jar包名称,启动命令 java -jar xxx.jar 
 PROJECT_BULID_FILE_NAME="auto_download.jar"
+#项目启用的配置文件 spring.profiles.active的值
+PROJECT_ACTIVE_PROFILE="prod"
 #项目日志,日志的目录
 LOG_FILE_PATH="./log/auto_download.log"
 #项目启动成功时日志输出的关键字
@@ -132,4 +134,4 @@ changeWorkspace
 checkJarExists ${PROJECT_BULID_FILE_NAME}      # 检查jar包是否存在
 checkIsRuning ${PROJECT_BULID_FILE_NAME}       # 停服务
 startJar                                       # 启服务
-#backup
+#backup     #备份
