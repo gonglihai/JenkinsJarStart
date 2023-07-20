@@ -34,8 +34,8 @@ LOG_FAIL_END_MARK="Shutting down"
 
 # java 命令路径
 JAVA="/root/home/tools/jdk17/bin/java"
-# jvm 启动参数
-START_PARAMS="-Xmx32m -jar -Dspring.profiles.active=${PROJECT_ACTIVE_PROFILE}"
+# jvm 启动参数 (远程debug, 最大内存 32M, jar包启动)
+START_PARAMS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Xmx32m -jar -Dspring.profiles.active=${PROJECT_ACTIVE_PROFILE}"
 
 # 等待停止超时时间, 超过设置的时间后强制退出 (kill - 9), 单位: 秒, -1 不强制退出
 WAIT_TIMEOUT_STOP=30
