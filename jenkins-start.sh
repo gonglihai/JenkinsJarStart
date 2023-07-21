@@ -123,7 +123,7 @@ function startJar() {
   echo "------------------------------------日志 结束------------------------------------"
 
   if [[ ${projectStartStatus} == 0 ]]; then
-    echo 0 "启动成功 (匹配到启动成功日志标识符 \"${LOG_SUCCESS_END_MARK}\")"
+    echo "启动成功 (匹配到启动成功日志标识符 \"${LOG_SUCCESS_END_MARK}\")"
     return
   fi
 
